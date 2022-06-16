@@ -1,12 +1,12 @@
-const mongosse = require('mongoose');
+const mongoose = require('mongoose');
 
 const dbConnection = async () => {
     try {
-        await mongosse.connect('')
-        .then(console.info('DB Online'))
+        await mongoose.connect(process.env.DB_CNN)
+        .then(console.info('DB online'))
         .catch(err => console.warn(err));
     } catch (error) {
-        throw new Error('Error al iniciar base de datos', error);
+        throw new Error('Error init bd ', error);
     }
 }
 
