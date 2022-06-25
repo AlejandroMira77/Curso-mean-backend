@@ -9,14 +9,13 @@ const app = express();
 // el use es un middleware
 app.use(cors());
 
+// lectura y parseo del body
+app.use( express.json() );
+
 dbConnection();
 
-app.get('/', (req, res) => {
-    res.json({
-        ok: true,
-        msg: 'Alejandro Mira'
-    })
-});
+app.use('/api/users', require('./routes/users'));
+app.use('/api/login', require('./routes/auth'));
 
 app.listen(process.env.PORT, () => {
     console.log('run ', process.env.PORT)
