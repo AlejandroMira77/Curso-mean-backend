@@ -1,6 +1,7 @@
 const { response } = require('express');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
+const { generateJWT } = require('../helpers/jwt');
 
 const login = async(req, res = response) => {
     const { email, password } = req.body;
@@ -12,6 +13,7 @@ const login = async(req, res = response) => {
                 msg: 'Email no valido'
             });
         }
+
         // Verificar password
         const validatePass = bcrypt.compareSync(password, userDB.password);
         if (!validatePass) {
@@ -19,10 +21,12 @@ const login = async(req, res = response) => {
                 msg: 'Constraseña no valido'
             });
         }
+        
         // Generar un token - jwt
+        const token = await generateJWT(userDB.id);
         res.json({
-            msg: 'Hola mundo'
-        })
+            token
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
