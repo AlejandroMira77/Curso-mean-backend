@@ -16,6 +16,7 @@ dbConnection();
 
 app.use('/api/users', require('./routes/users'));
 app.use('/api/login', require('./routes/auth'));
+app.use('/api/hospitales', require('./routes/hospitales'));
 
 app.listen(process.env.PORT, () => {
     console.log('run ', process.env.PORT)
