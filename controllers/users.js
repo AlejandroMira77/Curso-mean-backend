@@ -4,10 +4,28 @@ const bcrypt = require('bcryptjs');
 const { generateJWT } = require('../helpers/jwt');
 
 const getUsers = async (req, res) => {
-    const users = await User.find({}, 'name email role google');
-    res.json({
-        users
-    })
+    try {
+        // consulta de usuarios con paginación
+        const from = Number(req.query.from) || 0;
+        // const users = await User.find({}, 'name email role google')
+        //                         .skip(from).limit(5);
+        // const totalUsers = await User.count();
+        //-----------------------
+        // resolver todo en un solo llamado
+        const [ users, totalUsers ] = await Promise.all([
+            User.find({}, 'name email role google img').skip(from).limit(5),
+            User.countDocuments()
+        ]);
+        res.json({
+            users,
+            totalUsers
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Error inesperado revisar logs'
+        });
+    }
 }
 
 const createUser = async (req, res = response) => {
@@ -16,7 +34,6 @@ const createUser = async (req, res = response) => {
         const existEmail = await User.findOne({ email });
         if (existEmail) {
             return res.status(400).json({
-                ok: false,
                 msg: 'El correo ya esta registrado'
             });
         }
@@ -37,7 +54,6 @@ const createUser = async (req, res = response) => {
         });
     } catch (error) {
         res.status(500).json({
-            ok: false,
             msg: 'Error inesperado revisar logs'
         });
     }
@@ -58,7 +74,6 @@ const updateUser = async (req, res = response) => {
             const existEmail = await User.findOne({ email });
             if (existEmail) {
                 return res.status(400).json({
-                    ok: false,
                     msg: 'El correo ya esta registrado'
                 });
             }
