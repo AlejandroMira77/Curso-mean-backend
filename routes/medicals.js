@@ -22,10 +22,15 @@ router.post('/',
 );
 
 router.put('/:id', 
-    [],
+    [
+        validateJWT,
+        check('name', 'El nombre del medico es obligatorio').not().isEmpty(),
+        check('hospital', 'El hospital id debe ser válido').isMongoId(),
+        validateFields
+    ],
     updateMedicals
 );
 
-router.delete('/:id', deleteMedicals);
+router.delete('/:id', validateJWT, deleteMedicals);
 
 module.exports = router;

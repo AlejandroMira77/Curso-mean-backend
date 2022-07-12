@@ -35,16 +35,51 @@ const createMedicals = async (req, res = response) => {
     }
 }
 
-const updateMedicals = (req, res = response) => {
-    res.json({
-        msg: 'update Medicals'
-    });
+const updateMedicals = async (req, res = response) => {
+    const id = req.params.id;
+    const uid = req.uid;
+    try {
+        const medical = await Medical.findById(id);
+        if (!medical) {
+            return res.status(404).json({
+                msg: 'Medico no encontrado por id'
+            });
+        }
+        const changeMedical = {
+            ...req.body,
+            user: uid
+        }
+        const updateMedical = await Medical.findByIdAndUpdate(id, changeMedical, { new: true });
+        res.json({
+            medico: updateMedical
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Hable con el administrador',
+        });
+    }
 }
 
-const deleteMedicals = (req, res = response) => {
-    res.json({
-        msg: 'delete Medicals'
-    });
+const deleteMedicals = async (req, res = response) => {
+    const id = req.params.id;
+    try {
+        const medical = await Medical.findById(id);
+        if (!medical) {
+            return res.status(404).json({
+                msg: 'Medico no encontrado por id'
+            });
+        }
+        await Medical.findByIdAndDelete(id);
+        res.json({
+            msg: 'Medico eliminado...'
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Hable con el administrador',
+        });
+    }
 }
 
 module.exports = {
